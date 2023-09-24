@@ -1,4 +1,3 @@
-
 <span><a  href="/">Regresar</a></span> <span><button id="printButton">Imprimir Lista</button></span>
 <br/>
 
@@ -6,6 +5,11 @@
 <button id="agregarProducto">Agregar Producto</button>
 
 <h1>Lista de productos en Base de Datos</h1>
+
+<div>
+  <ul id="DBProductsList"></ul>
+</div>
+
 {{#if hasProducts}}
  <div class="grid">
         {{#each productos }}
@@ -17,12 +21,13 @@
                 <img class="dbimg"src={{this.thumbnail}}
                     alt="Product">
             </div>
-        </article>
+        </article> 
+        <a href="/productdetail/{{ this._id }}">Más detalles</a> <!-- Enlace a la vista de detalles del producto -->    
         {{/each }}
     {{else}}
     <h1> ¡No se encontraron productos! </h1>
     {{/if}}
- </div>
+ </div> 
 
 <!-- Ventana modal para AGREGAR PRODUCTOS -->
 <div id="modal" class="modal">
@@ -52,6 +57,6 @@
   </div>
 </div>
 
-<script src="socket.io/socket.io.js"></script>
+
 <script src="assets/scripts/modalAddProduct.js"></script>
  <script type="module" src="assets/scripts/print.js"></script> 

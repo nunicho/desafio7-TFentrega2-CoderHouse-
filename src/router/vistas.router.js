@@ -2,7 +2,7 @@ const Router = require("express").Router;
 const router = Router();
 const arrayProducts = require("../archivos/productos.json");
 const productosModelo = require("../dao/DB/models/productos.modelo.js");
-
+const mongoose = require("mongoose");
 
 router.get("/", (req, res) => {
   res.setHeader("Content-Type", "text/html");
@@ -36,6 +36,30 @@ router.get("/products", (req, res) => {
   });
 });
 
+
+router.get("/productdetail/:id", async (req, res) => {
+  let id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(400).json({ error: "id inválido" });
+
+  let productoDB = await productosModelo.findById(id);
+
+  if (!productoDB)
+    return res.status(404).json({ error: `Producto con id ${id} inexistente` });
+
+  res.status(200).render("DBproductsDetails", {
+    title: productoDB.title,
+    description: productoDB.description,
+    price: productoDB.price,
+    thumbnail: productoDB.thumbnail ,  
+    code: productoDB.code, 
+    stock: productoDB.stock,
+    estilo: "realTimeProducts.css"
+  });
+});
+
+
 router.get("/realtimeproducts", (req, res) => {
   let index = parseInt(req.query.index) || 0;
   const array = arrayProducts;
@@ -59,9 +83,6 @@ router.get("/realtimeproducts", (req, res) => {
     estilo: "realTimeProducts.css",
   });
 });
-
-
-
 
 router.get("/DBproducts", async (req, res) => {
   try {
