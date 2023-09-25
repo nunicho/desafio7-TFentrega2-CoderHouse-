@@ -22,27 +22,19 @@ router.get("/", async (req, res) => {
 
 //------------------------------------------------------------------------ PETICION GET con /:ID
 
+
 router.get("/:id", async (req, res) => {
-let id = req.params.id;
+  let id = req.params.id;
 
-if (!mongoose.Types.ObjectId.isValid(id))
-  return res.status(400).json({ error: "id inválido" });
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(400).json({ error: "id inválido" });
 
-let productoDB = await productosModelo.findById(id).lean();
+  let productoDB = await productosModelo.findById(id);
 
-if (!productoDB)
-  return res.status(404).json({ error: `Producto con id ${id} inexistente` });
+  if (!productoDB)
+    return res.status(404).json({ error: `Producto con id ${id} inexistente` });
 
-res.status(200).render("DBproductsDetails", {
-  productoDB,
-  // title: productoDB.title,
-  // description: productoDB.description,
-  // price: productoDB.price,
-  // thumbnail: productoDB.thumbnail ,
-  // code: productoDB.code,
-  // stock: productoDB.stock,
-  // estilo: "realTimeProducts.css"
-});
+  res.status(200).json({ productoDB });
 });
 
 module.exports = router;

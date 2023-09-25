@@ -30,8 +30,8 @@ const vistasRouter = require("./router/vistas.router.js");
 // Inicialización de routers
 app.use("/api/fsproducts", FSproductsRouter);
 app.use("/api/fscarts", FScartsRouter);
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
+app.use("/api/dbproducts", productsRouter);
+app.use("/api/dbcarts", cartsRouter);
 app.use("/", vistasRouter);
 
 // HANDLEBARS - inicialización

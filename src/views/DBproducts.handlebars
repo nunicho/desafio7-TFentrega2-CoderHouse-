@@ -22,8 +22,8 @@
                     alt="Product">
             </div>
         </article> 
-        <a href="api/products/{{ this._id }}">Más detalles</a>
-        <a href="api/products/" class="eliminar-producto" data-product-id="{{ this._id }}">Eliminar</a>      
+        <a href="DBProducts/{{ this._id }}">Más detalles</a>
+        <a href="DBProducts/" class="eliminar-producto" data-product-id="{{ this._id }}">Eliminar</a>      
         {{/each }}
     {{else}}
     <h1> ¡No se encontraron productos! </h1>
@@ -51,7 +51,7 @@
   <div class="modal-scrollable-content">
     <span class="close" id="cerrarModal">&times;</span>
     <h2>Ingresar Producto</h2>
-    <form id="productForm" action="/api/products" method="POST">
+    <form id="productForm" action="/DBProducts" method="POST">
       <label for="title">Título:</label>
       <input type="text" id="title" name="title" required />
 
