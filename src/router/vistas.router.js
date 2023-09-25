@@ -69,6 +69,58 @@ router.get("/fsrealtimeproducts", (req, res) => {
 
 router.get("/DBproducts", async (req, res) => {
   try {
+    let pagina = req.query.pagina || 1; // Establece la página predeterminada como 1
+    let filtroTitle = req.query.filtro; // Obtén el filtro de título de la consulta
+    let filtroCode = req.query.codeFilter; // Obtén el filtro de código de la consulta
+
+    let query = {}; // Define un objeto de consulta vacío
+
+    if (filtroTitle && filtroCode) {
+      // Si se proporcionan ambos filtros, construye la consulta con ambos filtros
+      query = {
+        $or: [
+          { title: { $regex: filtroTitle, $options: "i" } },
+          { code: { $regex: filtroCode, $options: "i" } },
+        ],
+      };
+    } else if (filtroTitle) {
+      // Si solo se proporciona un filtro de título, usa ese filtro
+      query = { title: { $regex: filtroTitle, $options: "i" } };
+    } else if (filtroCode) {
+      // Si solo se proporciona un filtro de código, usa ese filtro
+      query = { code: { $regex: filtroCode, $options: "i" } };
+    }
+
+    let productos = await productosModelo.paginate(query, {
+      limit: 5,
+      lean: true,
+      page: pagina,
+    });
+
+    let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } =
+      productos;
+
+    res.header("Content-type", "text/html");
+    res.status(200).render("DBproducts", {
+      productos: productos.docs,
+      hasProducts: productos.docs.length > 0,
+      activeProduct: true,
+      pageTitle: "Productos en DATABASE",
+      estilo: "productsStyles.css",
+      totalPages,
+      hasPrevPage,
+      hasNextPage,
+      prevPage,
+      nextPage,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+/*
+router.get("/DBproducts", async (req, res) => {
+  try {
     //const productos = await productosModelo.find().lean();
 
     let pagina = req.query.pagina
@@ -96,8 +148,7 @@ router.get("/DBproducts", async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-
-
+*/
 router.get("/DBproducts/:id", async (req, res) => {
   let id = req.params.id;
 

@@ -6,6 +6,15 @@
 
 <h1>Lista de productos en Base de Datos</h1>
 
+<form action="/DBproducts" method="GET" id="filtroForm">
+  <label for="filtro">Filtrar por nombre:</label>
+  <input type="text" id="filtro" name="filtro" value="{{filtro}}" /> <!-- Establece el valor del filtro -->
+  <label for="codeFilter">Filtrar por código:</label>
+  <input type="text" id="codeFilter" name="codeFilter" value="{{codeFilter}}" /> <!-- Establece el valor del filtro de código -->
+  <button type="submit">Filtrar</button>
+  <button type="button" id="limpiarFiltros">Limpiar</button> <!-- Botón para limpiar el formulario -->
+</form>
+
 <div>
   <ul id="DBProductsList"></ul>
 </div>
@@ -78,3 +87,4 @@
 <script src="assets/scripts/modalAddProduct.js"></script>
  <script type="module" src="assets/scripts/deleteProduct.js"></script> 
 <script type="module" src="assets/scripts/print.js"></script> 
+<script type="module" src="assets/scripts/dbProductsfilter.js"></script> 

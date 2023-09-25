@@ -20,6 +20,7 @@ router.get("/", async (req, res) => {
   res.status(200).json({ limitedData });
 });
 
+
 //------------------------------------------------------------------------ PETICION GET con /:ID
 
 
