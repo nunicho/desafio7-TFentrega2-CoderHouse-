@@ -69,14 +69,15 @@ router.get("/fsrealtimeproducts", (req, res) => {
 
 router.get("/DBproducts", async (req, res) => {
   try {
-    let pagina = req.query.pagina || 1; // Establece la página predeterminada como 1
-    let filtroTitle = req.query.filtro; // Obtén el filtro de título de la consulta
-    let filtroCode = req.query.codeFilter; // Obtén el filtro de código de la consulta
+    let pagina = req.query.pagina || 1;
+    let filtroTitle = req.query.filtro;
+    let filtroCode = req.query.codeFilter;
+    let sortOption = req.query.sort; // Obtén el valor del campo "sort" de la consulta
+    let limit = parseInt(req.query.limit) || 10; // Obtén el valor del parámetro "limit" de la consulta, o establece un valor predeterminado de 10
 
-    let query = {}; // Define un objeto de consulta vacío
+    let query = {};
 
     if (filtroTitle && filtroCode) {
-      // Si se proporcionan ambos filtros, construye la consulta con ambos filtros
       query = {
         $or: [
           { title: { $regex: filtroTitle, $options: "i" } },
@@ -84,17 +85,26 @@ router.get("/DBproducts", async (req, res) => {
         ],
       };
     } else if (filtroTitle) {
-      // Si solo se proporciona un filtro de título, usa ese filtro
       query = { title: { $regex: filtroTitle, $options: "i" } };
     } else if (filtroCode) {
-      // Si solo se proporciona un filtro de código, usa ese filtro
       query = { code: { $regex: filtroCode, $options: "i" } };
     }
 
+    let sortQuery = {}; // Inicializa el objeto de consulta de ordenamiento vacío
+
+    if (sortOption === "price_asc") {
+      // Si el usuario selecciona orden ascendente por precio
+      sortQuery = { price: 1 };
+    } else if (sortOption === "price_desc") {
+      // Si el usuario selecciona orden descendente por precio
+      sortQuery = { price: -1 };
+    }
+
     let productos = await productosModelo.paginate(query, {
-      limit: 5,
+      limit: limit, // Aplica el límite según el valor de "limit"
       lean: true,
       page: pagina,
+      sort: sortQuery, // Aplica el ordenamiento según el valor de sortQuery
     });
 
     let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } =
@@ -104,7 +114,8 @@ router.get("/DBproducts", async (req, res) => {
     res.status(200).render("DBproducts", {
       productos: productos.docs,
       hasProducts: productos.docs.length > 0,
-      activeProduct: true,
+      //activeProduct: true,
+      status: productos.docs.status,
       pageTitle: "Productos en DATABASE",
       estilo: "productsStyles.css",
       totalPages,
@@ -112,11 +123,17 @@ router.get("/DBproducts", async (req, res) => {
       hasNextPage,
       prevPage,
       nextPage,
+      filtro: filtroTitle || "",
+      codeFilter: filtroCode || "",
+      sort: sortOption || "", // Establece el valor del campo de ordenamiento en la vista
+      limit: limit, // Pasa el límite a la vista
     });
   } catch (error) {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+module.exports = router;
 
 /*
 router.get("/DBproducts", async (req, res) => {

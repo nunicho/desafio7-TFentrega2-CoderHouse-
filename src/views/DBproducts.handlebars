@@ -11,6 +11,18 @@
   <input type="text" id="filtro" name="filtro" value="{{filtro}}" /> <!-- Establece el valor del filtro -->
   <label for="codeFilter">Filtrar por código:</label>
   <input type="text" id="codeFilter" name="codeFilter" value="{{codeFilter}}" /> <!-- Establece el valor del filtro de código -->
+  
+  
+    <label for="sort">Ordenar por:</label>
+  <select id="sort" name="sort">
+    <option value="">Sin orden</option>
+    <option value="price_asc">Precio ascendente</option>
+    <option value="price_desc">Precio descendente</option>
+  </select>
+
+    <label for="limit">Número de Elementos a Mostrar:</label>
+  <input type="number" id="limit" name="limit" value="{{limit}}" />
+  
   <button type="submit">Filtrar</button>
   <button type="button" id="limpiarFiltros">Limpiar</button> <!-- Botón para limpiar el formulario -->
 </form>
