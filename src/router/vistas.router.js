@@ -62,24 +62,28 @@ router.get("/realtimeproducts", (req, res) => {
 
 router.get("/DBproducts", async (req, res) => {
   try {
-    const productos = await productosModelo.find().lean();
+    //const productos = await productosModelo.find().lean();
 
-    let productosDB = await productosModelo.paginate(
-      {},
-      { limit: 20, lean: true }
-    );
-    console.log(productosDB);
+    let pagina = req.query.pagina
+    if(!pagina) pagina =1
+   
+    let productos = await productosModelo.paginate({},{limit:5, lean: true, page:pagina});
+    console.log(productos)
 
-    //let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } =
-    //  productosDB;
+    let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } = productos;
 
     res.header("Content-type", "text/html");
     res.status(200).render("DBproducts", {
-      productos: productos,
-      hasProducts: productos.length > 0,
+      productos: productos.docs,
+      hasProducts: productos.docs.length > 0,
       activeProduct: true,
       pageTitle: "Productos en DATABASE",
       estilo: "productsStyles.css",
+      totalPages,
+      hasPrevPage,
+      hasNextPage,
+      prevPage,
+      nextPage,
     });
   } catch (error) {
     res.status(500).json({ error: "Error interno del servidor" });

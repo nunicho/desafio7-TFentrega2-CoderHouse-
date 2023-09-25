@@ -12,24 +12,12 @@ const productosModelo = require("../models/productos.modelo.js");
 //------------------------------------------------------------------------ PETICION GET
 
 router.get("/", async (req, res) => {
-  //let productosDB = await productosModelo.find().lean();
-  //const limit = parseInt(req.query.limit) || productosDB.length;
-  //const limitedData = productosDB.slice(0, limit);
-  //res.setHeader("Content-Type", "application/json");
-  //res.status(200).json({ limitedData});});
+  let productosDB = await productosModelo.find();
 
-  const productosDB = await productosModelo.find().lean();
-   
-  res.header("Content-type", "text/html");
-  res.status(200).render("products", {
-    product: product,
-    index: index,
-    titlePage: "Página de productos",
-    estilo: "productsStyles.css",
-  });
-
+  const limit = parseInt(req.query.limit) || productosDB.length;
+  const limitedData = productosDB.slice(0, limit);
   res.setHeader("Content-Type", "application/json");
-  res.status(200).json({ productosDB });
+  res.status(200).json({ limitedData });
 });
 
 //------------------------------------------------------------------------ PETICION GET con /:ID
