@@ -22,7 +22,8 @@
                     alt="Product">
             </div>
         </article> 
-        <a href="/productdetail/{{ this._id }}">Más detalles</a> <!-- Enlace a la vista de detalles del producto -->    
+        <a href="/productdetail/{{ this._id }}">Más detalles</a>
+        <a href="#" class="eliminar-producto" data-product-id="{{ this._id }}">Eliminar</a>      
         {{/each }}
     {{else}}
     <h1> ¡No se encontraron productos! </h1>
@@ -59,4 +60,5 @@
 
 
 <script src="assets/scripts/modalAddProduct.js"></script>
+ <script type="module" src="assets/scripts/deleteProduct.js"></script> 
  <script type="module" src="assets/scripts/print.js"></script> 

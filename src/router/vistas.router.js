@@ -59,6 +59,27 @@ router.get("/productdetail/:id", async (req, res) => {
   });
 });
 
+router.delete("/productDelete/:id", async (req, res) => {
+  let id = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(400).json({ error: "id inválido" });
+
+  let existe = await productosModelo.findById(id);
+
+  if (!existe)
+    return res.status(404).json({ error: `Producto con id ${id} inexistente` });
+  
+  await productosModelo.deleteOne({ _id: id });
+  
+  res.redirect("/DBproducts");
+});
+
+
+
+
+
+
+
 
 router.get("/realtimeproducts", (req, res) => {
   let index = parseInt(req.query.index) || 0;
