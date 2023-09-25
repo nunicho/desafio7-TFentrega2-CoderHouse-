@@ -9,7 +9,7 @@ eliminarBotones.forEach((enlace) => {
     const productId = this.getAttribute("data-product-id"); // Obtiene el ID del producto
 
     // Realiza una solicitud DELETE al servidor
-    fetch(`/productDelete/${productId}`, {
+    fetch(`/api/products/${productId}`, {
       method: "DELETE",
     })
       .then((response) => {

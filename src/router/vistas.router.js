@@ -36,53 +36,6 @@ router.get("/products", (req, res) => {
   });
 });
 
-
-router.get("/productdetail/:id", async (req, res) => {
-  let id = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(id))
-    return res.status(400).json({ error: "id inválido" });
-
-  let productoDB = await productosModelo.findById(id).lean();;
-
-  if (!productoDB)
-    return res.status(404).json({ error: `Producto con id ${id} inexistente` });
-
-  res.status(200).render("DBproductsDetails", {
-    
-    productoDB
-    // title: productoDB.title,
-    // description: productoDB.description,
-    // price: productoDB.price,
-    // thumbnail: productoDB.thumbnail ,  
-    // code: productoDB.code, 
-    // stock: productoDB.stock,
-    // estilo: "realTimeProducts.css"
-  });
-});
-
-router.delete("/productDelete/:id", async (req, res) => {
-  let id = req.params.id;
-  if (!mongoose.Types.ObjectId.isValid(id))
-    return res.status(400).json({ error: "id inválido" });
-
-  let existe = await productosModelo.findById(id);
-
-  if (!existe)
-    return res.status(404).json({ error: `Producto con id ${id} inexistente` });
-  
-  await productosModelo.deleteOne({ _id: id });
-  
-  res.redirect("/DBproducts");
-});
-
-
-
-
-
-
-
-
 router.get("/realtimeproducts", (req, res) => {
   let index = parseInt(req.query.index) || 0;
   const array = arrayProducts;
@@ -110,7 +63,16 @@ router.get("/realtimeproducts", (req, res) => {
 router.get("/DBproducts", async (req, res) => {
   try {
     const productos = await productosModelo.find().lean();
-    
+
+    let productosDB = await productosModelo.paginate(
+      {},
+      { limit: 20, lean: true }
+    );
+    console.log(productosDB);
+
+    //let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } =
+    //  productosDB;
+
     res.header("Content-type", "text/html");
     res.status(200).render("DBproducts", {
       productos: productos,
