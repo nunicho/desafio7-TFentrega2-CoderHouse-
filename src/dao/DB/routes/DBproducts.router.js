@@ -12,16 +12,26 @@ const productosModelo = require("../models/productos.modelo.js");
 //------------------------------------------------------------------------ PETICION GET
 
 router.get("/", async (req, res) => {
-  let productosDB = await productosModelo.find();
+  //let productosDB = await productosModelo.find();
+  //const limit = parseInt(req.query.limit) || productosDB.length;
+  //const limitedData = productosDB.slice(0, limit);
+  //res.setHeader("Content-Type", "application/json");
+  //res.status(200).json({ limitedData});});
 
-  const limit = parseInt(req.query.limit) || productosDB.length;
-  const limitedData = productosDB.slice(0, limit);
+  let productosDB = await productosModelo.paginate(
+    {},
+    { limit: 20, lean: true }
+  );
+  console.log(productosDB);
+
+  let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } =
+    productosDB;
+
   res.setHeader("Content-Type", "application/json");
-  res.status(200).json({ limitedData});});
-
+  res.status(200).json({ productosDB });
+});
 
 //------------------------------------------------------------------------ PETICION GET con /:ID
-
 
 router.get("/:id", async (req, res) => {
   let id = req.params.id;
@@ -39,7 +49,6 @@ router.get("/:id", async (req, res) => {
 
 module.exports = router;
 
-
 //------------------------------------------------------------------------ PETICION POST
 
 router.post("/", async (req, res) => {
@@ -56,11 +65,9 @@ router.post("/", async (req, res) => {
 
   let existe = await productosModelo.findOne({ code: producto.code });
   if (existe)
-    return res
-      .status(400)
-      .json({
-        error: `El código ${producto.code} ya está siendo usado por otro producto.`,
-      });
+    return res.status(400).json({
+      error: `El código ${producto.code} ya está siendo usado por otro producto.`,
+    });
 
   try {
     let productoInsertado = await productosModelo.create(producto);
@@ -107,7 +114,7 @@ router.put("/:id", async (req, res) => {
 
   console.log(resultado);
 
-  res.status(200).json({ resultado });  
+  res.status(200).json({ resultado });
 });
 
 //------------------------------------------------------------------------ PETICION DELETE
@@ -117,14 +124,13 @@ router.delete("/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(400).json({ error: "id inválido" });
 
-
   let existe = await productosModelo.findById(id);
 
   if (!existe)
     return res.status(404).json({ error: `Producto con id ${id} inexistente` });
   let resultado = await productosModelo.deleteOne({ _id: id });
 
-  res.status(200).json({ resultado });  
+  res.status(200).json({ resultado });
 });
 
 module.exports = router;

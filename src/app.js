@@ -4,9 +4,7 @@ const http = require("http");
 const socketIO = require("socket.io");
 const MessageModel = require("./dao/DB/models/messages.modelo.js");
 const moongose = require("mongoose");
-const path = require("path"); 
-
-
+const path = require("path");
 
 // HANDLEBARS - importación
 const handlebars = require("express-handlebars");
@@ -61,9 +59,7 @@ const serverExpress = app.listen(PORT, () => {
 
 const serverSocket = socketIO(serverExpress);
 
-serverSocket.on("connection", (socket) => {
-  
-});
+serverSocket.on("connection", (socket) => {});
 
 moongose
   .connect(
@@ -126,8 +122,6 @@ serverSocketChat.on("connection", (socket) => {
     serverSocket.emit("productoAgregado", data);
   });
 
-  
-
   function getProducts() {
     const ruta = path.join(__dirname, "archivos", "productos.json");
     if (fs.existsSync(ruta)) {
@@ -141,7 +135,7 @@ serverSocketChat.on("connection", (socket) => {
     const productos = getProducts();
 
     function saveProducts(products) {
-     const ruta = path.join(__dirname,  "archivos", "productos.json");
+      const ruta = path.join(__dirname, "archivos", "productos.json");
       try {
         fs.writeFileSync(ruta, JSON.stringify(products, null, 2), "utf8");
       } catch (error) {
@@ -160,5 +154,3 @@ serverSocketChat.on("connection", (socket) => {
 
   socket.emit("productosActualizados", getProducts());
 });
-
-

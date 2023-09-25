@@ -43,19 +43,21 @@ router.get("/productdetail/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     return res.status(400).json({ error: "id inválido" });
 
-  let productoDB = await productosModelo.findById(id);
+  let productoDB = await productosModelo.findById(id).lean();;
 
   if (!productoDB)
     return res.status(404).json({ error: `Producto con id ${id} inexistente` });
 
   res.status(200).render("DBproductsDetails", {
-    title: productoDB.title,
-    description: productoDB.description,
-    price: productoDB.price,
-    thumbnail: productoDB.thumbnail ,  
-    code: productoDB.code, 
-    stock: productoDB.stock,
-    estilo: "realTimeProducts.css"
+    
+    productoDB
+    // title: productoDB.title,
+    // description: productoDB.description,
+    // price: productoDB.price,
+    // thumbnail: productoDB.thumbnail ,  
+    // code: productoDB.code, 
+    // stock: productoDB.stock,
+    // estilo: "realTimeProducts.css"
   });
 });
 

@@ -1,12 +1,8 @@
 const mongoose = require("mongoose");
-const productosModelo = require("./productos.modelo.js"); // Asegúrate de proporcionar la ruta correcta
 
 // Define el esquema para los productos dentro del carrito
 const productoCarritoSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: productosModelo, // "Producto" debe coincidir con el nombre del modelo en productos.modelo.js
-  },
+  id: String,
   quantity: Number,
 });
 
@@ -18,3 +14,7 @@ const carritoSchema = new mongoose.Schema({
 const carritoModelo = mongoose.model("Carrito", carritoSchema);
 
 module.exports = carritoModelo;
+
+
+
+

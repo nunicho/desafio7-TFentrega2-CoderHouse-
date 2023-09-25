@@ -1,12 +1,12 @@
 <h1>Detalles del Producto</h1>
 
 <div class="product-details">
-    <h2>{{ title }}</h2>
-    <h4><strong>Descripción:</strong> {{ description }}</>
-    <h4><strong>Precio:</strong> ${{ price }}</>
-    <h4><strong>Stock:</strong> {{ stock }}</>
-    <h4><strong>Código:</strong> {{ code }}</>
-    <img src="{{ thumbnail }}" alt="{{ title }}" class="product-image">
+    <h2>{{ productoDB.title }}</h2>
+    <h4><strong>Descripción:</strong> {{ productoDB.description }}</>
+    <h4><strong>Precio:</strong> ${{ productoDB.price }}</>
+    <h4><strong>Stock:</strong> {{ productoDB.stock }}</>
+    <h4><strong>Código:</strong> {{ productoDB.code }}</>
+    <img src="{{ productoDB.thumbnail }}" alt="{{ productoDB.title }}" class="product-image">
 
 </div>
 
