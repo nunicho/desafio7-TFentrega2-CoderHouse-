@@ -218,6 +218,42 @@ router.put("/:cid/products/:pid", async (req, res) => {
   }
 });
 
+
+//-------------------------------------------------- PETICION DELETE api/dbcarts/:cid
+
+router.delete("/:cid", async (req, res) => {
+  try {
+    const cid = req.params.cid; // ID del carrito a eliminar
+
+    // Verifica si el ID del carrito es válido
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      return res.status(400).json({
+        error: "ID de carrito inválido",
+      });
+    }
+
+    // Busca y elimina el carrito por su ID
+    const carritoEliminado = await carritosModelo.findByIdAndDelete(cid);
+
+    // Verifica si el carrito existe
+    if (!carritoEliminado) {
+      return res.status(404).json({
+        error: `El carrito con ID ${cid} no existe`,
+      });
+    }
+
+    res.status(200).json({
+      mensaje: "Carrito eliminado con éxito",
+      carrito: carritoEliminado,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error inesperado",
+      detalle: error.message,
+    });
+  }
+});
+
 //-------------------------------------------------- PETICION DELETE api/dbcarts/:cid/products/:pid 
 
 router.delete("/:cid/products/:pid", async (req, res) => {
