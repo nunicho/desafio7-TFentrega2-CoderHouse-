@@ -121,6 +121,103 @@ router.post("/", async (req, res) => {
 });
 
 
+//------------------------------------------------------------------------ PETICION PUT api/DBcarts/:cid
+
+router.put("/:cid", async (req, res) => {
+  try {
+    const cid = req.params.cid; // ID del carrito a actualizar
+    const nuevosProductos = req.body.products; // Arreglo de nuevos productos
+
+    // Verifica si el ID del carrito es válido
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      return res.status(400).json({
+        error: "ID de carrito inválido",
+      });
+    }
+
+    // Busca el carrito por su ID
+    const carrito = await carritosModelo.findOne({ _id: cid });
+
+    // Verifica si el carrito existe
+    if (!carrito) {
+      return res.status(404).json({
+        error: `El carrito con ID ${cid} no existe`,
+      });
+    }
+
+    // Verifica si el arreglo de nuevos productos es válido
+    if (!Array.isArray(nuevosProductos)) {
+      return res.status(400).json({
+        error: "El cuerpo de la solicitud debe contener un arreglo de productos",
+      });
+    }
+
+    // Verifica si hay datos faltantes en los nuevos productos
+    const datosFaltantes = nuevosProductos.some(
+      (product) => !product.id || !product.quantity
+    );
+
+    if (datosFaltantes) {
+      return res.status(400).json({
+        error: "Los nuevos productos deben contener campos 'id' y 'quantity'",
+      });
+    }
+
+    // Verifica si los IDs de los nuevos productos son válidos
+    const productIds = nuevosProductos.map((product) => product.id);
+
+    for (const productId of productIds) {
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return res.status(400).json({ error: "ID de producto inválido" });
+      }
+    }
+
+    // Actualiza los productos del carrito con los nuevos productos
+    carrito.products = nuevosProductos;
+
+    // Guarda el carrito actualizado en la base de datos
+    const carritoActualizado = await carrito.save();
+
+    res.status(200).json({
+      mensaje: "Carrito actualizado con éxito",
+      carrito: carritoActualizado,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error inesperado",
+      detalle: error.message,
+    });
+  }
+});
+
+
+//------------------------------------------------------------------------ PETICION PUT api/DBcarts/:cid/products/:pid
+
+router.put("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cid = req.params.cid; // ID del carrito a actualizar
+    const pid = req.params.pid; // ID del producto a actualizar
+    const { quantity } = req.body; // Cantidad de ejemplares del producto a actualizar
+
+    // Verifica si se proporcionaron todos los parámetros necesarios
+    if (!cid || !pid || !quantity) {
+      return res.status(400).json({
+        error:
+          "Todos los parámetros deben estar completos: cid, pid y quantity",
+      });
+    }
+
+    // Resto del código para actualizar la cantidad del producto en el carrito...
+
+    // Respuesta exitosa...
+  } catch (error) {
+    res.status(500).json({
+      error: "Error inesperado",
+      detalle: error.message,
+    });
+  }
+});
+
 //-------------------------------------------------- PETICION DELETE api/dbcarts/:cid/products/:pid 
 
 router.delete("/:cid/products/:pid", async (req, res) => {
