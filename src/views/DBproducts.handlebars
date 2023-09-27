@@ -2,6 +2,11 @@
 <br/>
 
 <!-- Botón para mostrar la ventana modal del formulario de AGREGAR PRODUCTO -->
+<div id="carritoProductos">
+  <!-- Aquí se mostrarán los productos agregados al carrito -->
+</div>
+
+
 <button id="agregarProducto">Agregar Producto</button>
 
 
@@ -46,7 +51,8 @@
             </div>
         </article> 
         <a href="DBProducts/{{ this._id }}">Más detalles</a>
-        <a href="DBProducts/" class="eliminar-producto" data-product-id="{{ this._id }}">Eliminar</a>      
+        <a href="DBProducts/" class="eliminar-producto" data-product-id="{{ this._id }}">Eliminar</a>
+        <a href="#" data-product-id="{{ this._id }}" data-product-name="{{ this.title }}">Agregar al Carrito</a>
         {{/each }}
     {{else}}
     <h1> ¡No se encontraron productos! </h1>
@@ -99,6 +105,11 @@
 
 
 <script src="assets/scripts/modalAddProduct.js"></script>
- <script type="module" src="assets/scripts/deleteProduct.js"></script> 
+<script type="module" src="assets/scripts/deleteProduct.js"></script> 
 <script type="module" src="assets/scripts/print.js"></script> 
 <script type="module" src="assets/scripts/dbProductsfilter.js"></script> 
+<script type="module" src="assets/scripts/addToCart.js"></script> 
+
+
+
+
