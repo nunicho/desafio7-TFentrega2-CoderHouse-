@@ -32,12 +32,10 @@ router.get("/:cid", async (req, res) => {
       });
     }
 
-    const carrito = await carritosModelo
-      .findOne({ _id: cid })
-      .populate({
-        path: "productos.producto",
-        model: prodModelo,
-      });
+    const carrito = await carritosModelo.findOne({ _id: cid }).populate({
+      path: "productos.producto",
+      model: prodModelo,
+    });
 
     if (!carrito) {
       return res.status(404).json({
@@ -46,9 +44,19 @@ router.get("/:cid", async (req, res) => {
       });
     }
 
-    // No es necesario mapear los productos en un nuevo arreglo
-    // Simplemente utiliza carrito.productos en la respuesta
-    res.status(200).json({ data: { carrito } });
+    // Modifica la respuesta para que "cantidad" se llame "quantity" y esté a la altura de "producto"
+    const productosEnCarrito = carrito.productos.map((productoEnCarrito) => ({
+      producto: {
+        ...productoEnCarrito.producto._doc,
+      },
+      quantity: productoEnCarrito.cantidad, // Cambia "cantidad" a "quantity" aquí
+    }));
+
+    res
+      .status(200)
+      .json({
+        data: { carrito: { _id: carrito._id, productos: productosEnCarrito } },
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error interno del servidor" });
@@ -120,6 +128,80 @@ router.post("/", async (req, res) => {
 
 //------------------------------------------------------------------------ PETICION PUT api/DBcarts/:cid
 
+router.put("/:cid/products/:pid", async (req, res) => {
+  try {
+    const cid = req.params.cid; // ID del carrito a actualizar
+    const pid = req.params.pid; // ID del producto a actualizar
+    const { quantity } = req.body; // Nueva cantidad del producto
+
+    // Verifica si se proporcionaron todos los parámetros necesarios
+    if (!cid || !pid || quantity === undefined) {
+      return res.status(400).json({
+        error:
+          "Todos los parámetros deben estar completos: cid, pid y quantity",
+      });
+    }
+
+    // Verifica si los IDs son válidos
+    if (
+      !mongoose.Types.ObjectId.isValid(cid) ||
+      !mongoose.Types.ObjectId.isValid(pid)
+    ) {
+      return res.status(400).json({
+        error: "IDs inválidos",
+      });
+    }
+
+    // Verifica si quantity es un número válido y mayor que cero
+    const parsedQuantity = parseInt(quantity, 10);
+    if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+      return res.status(400).json({
+        error: "La cantidad debe ser un número válido y mayor que cero",
+      });
+    }
+
+    // Busca el carrito por su ID
+    const carrito = await carritosModelo.findOne({ _id: cid });
+
+    // Verifica si el carrito existe
+    if (!carrito) {
+      return res.status(404).json({
+        error: `El carrito con ID ${cid} no existe`,
+      });
+    }
+
+    // Busca el índice del producto que se va a actualizar dentro del array de productos
+    const indexToUpdate = carrito.productos.findIndex(
+      (producto) => String(producto.producto) === pid
+    );
+
+    // Verifica si el producto a actualizar existe en el carrito
+    if (indexToUpdate === -1) {
+      return res.status(404).json({
+        error: `El producto con ID ${pid} no existe en el carrito`,
+      });
+    }
+
+    // Actualiza la cantidad del producto en el carrito
+    carrito.productos[indexToUpdate].cantidad = parsedQuantity;
+
+    // Guarda el carrito actualizado en la base de datos
+    const carritoActualizado = await carrito.save();
+
+    res.status(200).json({
+      mensaje: "Cantidad de producto actualizada en el carrito",
+      carrito: carritoActualizado,
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Error inesperado",
+      detalle: error.message,
+    });
+  }
+});
+
+//------------------------------------------------------------------------ PETICION PUT api/DBcarts/:cid
+
 router.put("/:cid", async (req, res) => {
   try {
     const cid = req.params.cid; // ID del carrito a actualizar
@@ -145,7 +227,8 @@ router.put("/:cid", async (req, res) => {
     // Verifica si el arreglo de nuevos productos es válido
     if (!Array.isArray(nuevosProductos)) {
       return res.status(400).json({
-        error: "El cuerpo de la solicitud debe contener un arreglo de productos",
+        error:
+          "El cuerpo de la solicitud debe contener un arreglo de productos",
       });
     }
 
@@ -170,6 +253,7 @@ router.put("/:cid", async (req, res) => {
     }
 
     // Actualiza los productos del carrito con los nuevos productos
+    // Aquí asumimos que carrito.products es un arreglo de objetos con formato { id, quantity }
     carrito.products = nuevosProductos;
 
     // Guarda el carrito actualizado en la base de datos
@@ -179,34 +263,6 @@ router.put("/:cid", async (req, res) => {
       mensaje: "Carrito actualizado con éxito",
       carrito: carritoActualizado,
     });
-  } catch (error) {
-    res.status(500).json({
-      error: "Error inesperado",
-      detalle: error.message,
-    });
-  }
-});
-
-
-//------------------------------------------------------------------------ PETICION PUT api/DBcarts/:cid/products/:pid
-
-router.put("/:cid/products/:pid", async (req, res) => {
-  try {
-    const cid = req.params.cid; // ID del carrito a actualizar
-    const pid = req.params.pid; // ID del producto a actualizar
-    const { quantity } = req.body; // Cantidad de ejemplares del producto a actualizar
-
-    // Verifica si se proporcionaron todos los parámetros necesarios
-    if (!cid || !pid || !quantity) {
-      return res.status(400).json({
-        error:
-          "Todos los parámetros deben estar completos: cid, pid y quantity",
-      });
-    }
-
-    // Resto del código para actualizar la cantidad del producto en el carrito...
-
-    // Respuesta exitosa...
   } catch (error) {
     res.status(500).json({
       error: "Error inesperado",
@@ -279,8 +335,8 @@ router.delete("/:cid/products/:pid", async (req, res) => {
     }
 
     // Busca el índice del producto que se va a eliminar dentro del array de productos
-    const indexToDelete = carrito.products.findIndex(
-      (product) => product.id === pid
+    const indexToDelete = carrito.productos.findIndex(
+      (producto) => String(producto.producto) === pid
     );
 
     // Verifica si el producto a eliminar existe en el carrito
@@ -291,7 +347,7 @@ router.delete("/:cid/products/:pid", async (req, res) => {
     }
 
     // Elimina el producto del array de productos del carrito
-    carrito.products.splice(indexToDelete, 1);
+    carrito.productos.splice(indexToDelete, 1);
 
     // Guarda el carrito actualizado en la base de datos
     const carritoActualizado = await carrito.save();

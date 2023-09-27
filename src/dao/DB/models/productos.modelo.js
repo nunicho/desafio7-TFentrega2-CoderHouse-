@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const mongoosePaginate = require("mongoose-paginate-v2")
 
-const productosColeccion = 'productos'
+
 const productosEsquema = new mongoose.Schema({
   status: {
     type: Boolean,
@@ -37,11 +37,7 @@ const productosEsquema = new mongoose.Schema({
 
 productosEsquema.plugin(mongoosePaginate)
 
-const productosModelo = mongoose.model(productosColeccion, productosEsquema);
+const productosModelo = mongoose.model('productos', productosEsquema);
 
 module.exports = productosModelo
 
-
-/*
-
-*/

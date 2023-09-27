@@ -1,12 +1,5 @@
 const mongoose = require("mongoose");
-
-const prodModelo = mongoose.model(
-  "modelProd",
-  new mongoose.Schema({
-    title: String,
-    price: Number,
-  })
-);
+const Producto = require("../models/productos.modelo.js");
 
 const carritoSchema = new mongoose.Schema({
   productos: {
@@ -14,17 +7,17 @@ const carritoSchema = new mongoose.Schema({
       {
         producto: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "modelProd",
+          ref: Producto,
         },
+        cantidad: Number, // Agrega el campo cantidad
       },
     ],
   },
 });
 
-const carritoModelo = mongoose.model('carritos', carritoSchema);
+const carritoModelo = mongoose.model("carritos", carritoSchema);
 
 module.exports = carritoModelo;
-
 
 /*
 const mongoose = require("mongoose");
