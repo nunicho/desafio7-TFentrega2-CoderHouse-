@@ -1,30 +1,55 @@
-// Función para agregar un producto al carrito
-function agregarAlCarrito(productId, productName) {
-  // Puedes realizar lógica para agregar el producto al carrito aquí
-  // Por ejemplo, puedes mantener un arreglo de productos en el carrito
+document.addEventListener("DOMContentLoaded", function () {
+  // Obtén los enlaces "Agregar al Carrito"
+  const addToCartLinks = document.querySelectorAll("[data-product-id]");
 
-  // Agregar el producto al contenedor del carrito
-  const carritoContainer = document.getElementById('carritoProductos');
-  const productoDiv = document.createElement('div');
-  productoDiv.textContent = productName;
-  carritoContainer.appendChild(productoDiv);
-}
+  // Obtén el botón "Limpiar Carrito"
+  const limpiarCarritoButton = document.getElementById("limpiarCarrito");
 
-// Obtén todos los elementos <a> con el atributo data-product-id
-const addToCartLinks = document.querySelectorAll('a[data-product-id]');
+  // Función para agregar un producto al carrito
+  function agregarAlCarrito(productId, productName) {
+    // Crear un div para contener el ítem del carrito
+    const itemDiv = document.createElement("div");
 
-// Agrega un evento de clic a cada enlace "Agregar al Carrito"
-addToCartLinks.forEach((link) => {
-  link.addEventListener('click', (event) => {
-    event.preventDefault(); // Evita la navegación a la URL "#" por defecto
+    // Crear un elemento de texto para mostrar el nombre del producto
+    const productNameText = document.createTextNode(productName);
+    itemDiv.appendChild(productNameText);
 
-    // Obtiene el ID del producto desde el atributo data-product-id
-    const productId = link.getAttribute('data-product-id');
+    // Crear un elemento <input> para seleccionar la cantidad
+    const quantityInput = document.createElement("input");
+    quantityInput.type = "number";
+    quantityInput.min = 1;
+    quantityInput.value = 1; // Establece el valor predeterminado a 1
+    itemDiv.appendChild(quantityInput);
 
-    // Obtén el nombre del producto (puedes obtenerlo de donde sea necesario)
-    const productName = link.getAttribute('data-product-name');
+    // Agregar el producto al contenedor del carrito
+    const carritoContainer = document.getElementById("carritoProductos");
+    carritoContainer.appendChild(itemDiv);
+  }
 
-    // Agrega el producto al carrito y actualiza la vista del carrito
-    agregarAlCarrito(productId, productName);
+  // Función para limpiar el carrito
+  function limpiarCarrito() {
+    const carritoContainer = document.getElementById("carritoProductos");
+    carritoContainer.innerHTML = ""; // Limpia el contenido del contenedor
+  }
+
+  // Agrega un evento de clic al botón "Limpiar Carrito"
+  limpiarCarritoButton.addEventListener("click", () => {
+    limpiarCarrito();
+  });
+
+  // Agrega un evento de clic a cada enlace "Agregar al Carrito"
+  addToCartLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault(); // Evita la navegación a la URL "#" por defecto
+
+      // Obtiene el ID del producto desde el atributo data-product-id
+      const productId = link.getAttribute("data-product-id");
+
+      // Obtén el nombre del producto desde el atributo data-product-name
+      const productName = link.getAttribute("data-product-name");
+
+      // Agrega el producto al carrito y actualiza la vista del carrito
+      agregarAlCarrito(productId, productName);
+    });
   });
 });
