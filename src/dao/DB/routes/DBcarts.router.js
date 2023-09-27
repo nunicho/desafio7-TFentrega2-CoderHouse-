@@ -4,6 +4,7 @@ const router = express.Router();
 const carritosModelo = require("../models/carritos.modelo.js"); // Importa el modelo de carritos
 const Producto = require("../models/productos.modelo.js"); // Importa el modelo de Producto
 const path = require("path");
+const prodModelo = require("../models/productos.modelo.js");
 //const carritoModelo = require("../models/carritos.modelo.js");
 
 //------------------------------------------------------------------------ PETICION GET
@@ -27,20 +28,16 @@ router.get("/:cid", async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(cid)) {
       return res.status(400).json({
         status: "error",
-        mensaje: 'Requiere un argumento "cid" de tipo numérico',
+        mensaje: 'Requiere un argumento "cid" de tipo ObjectId válido',
       });
     }
 
-    const carrito = await carritosModelo.findOne({ _id: cid }).populate({
-      path: "products",
-      populate: {
-        path: "product",
-        model: Producto, // Nombre del modelo de productos
-        populate: {
-          path: "code",
-        },
-      },
-    });
+    const carrito = await carritosModelo
+      .findOne({ _id: cid })
+      .populate({
+        path: "productos.producto",
+        model: prodModelo,
+      });
 
     if (!carrito) {
       return res.status(404).json({
@@ -49,12 +46,21 @@ router.get("/:cid", async (req, res) => {
       });
     }
 
-    res.status(200).json({ data: carrito });
+    // No es necesario mapear los productos en un nuevo arreglo
+    // Simplemente utiliza carrito.productos en la respuesta
+    res.status(200).json({ data: { carrito } });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
+
+
+
+
+
+
 
    
 //------------------------------------------------------------------------ PETICION POST
@@ -73,6 +79,7 @@ router.post("/", async (req, res) => {
         error: 'Los productos deben tener campos "id" y "quantity" completos',
       });
     }
+
     // Verificar que el ID sea válido según los parámetros de MongoDB
 
     // Verificar si los productos existen en la base de datos
@@ -84,37 +91,27 @@ router.post("/", async (req, res) => {
       }
     }
 
-    const existe = await Producto.findOne({ _id: { $in: productIds } });
-
-    if (!existe) {
-      return res
-        .status(400)
-        .json({ error: "Algunos artículos no existen en la base de datos" });
-    }
     // Sumar la cantidad de productos con el mismo id
     const groupedProducts = {};
     carritoToAdd.products.forEach((product) => {
       const { id, quantity } = product;
       if (!groupedProducts[id]) {
-        groupedProducts[id] = quantity;
+        groupedProducts[id] = parseInt(quantity, 10); // Asegúrate de convertir quantity a número
       } else {
-        groupedProducts[id] += quantity;
+        groupedProducts[id] += parseInt(quantity, 10); // Asegúrate de convertir quantity a número
       }
     });
 
     // Crear un nuevo carrito con las cantidades agrupadas
     const carrito = new carritosModelo({
-      products: Object.keys(groupedProducts).map((id) => ({
-        id: id,
-        quantity: groupedProducts[id],
+      productos: Object.keys(groupedProducts).map((id) => ({
+        producto: id, // Cambia "id" a "producto"
+        cantidad: groupedProducts[id], // Agrega cantidad
       })),
-      
     });
-    
+
     let carritoInsertado = await carrito.save();
     res.status(201).json({ carritoInsertado });
-
-
   } catch (error) {
     res.status(500).json({ error: "Error inesperado", detalle: error.message });
   }

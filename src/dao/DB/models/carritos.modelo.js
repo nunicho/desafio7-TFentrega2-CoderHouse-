@@ -1,21 +1,30 @@
 const mongoose = require("mongoose");
 
-const carritosColeccion = "carritos";
-const productoCarritoSchema = new mongoose.Schema({
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Producto", 
+const prodModelo = mongoose.model(
+  "modelProd",
+  new mongoose.Schema({
+    title: String,
+    price: Number,
+  })
+);
+
+const carritoSchema = new mongoose.Schema({
+  productos: {
+    type: [
+      {
+        producto: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "modelProd",
+        },
+      },
+    ],
   },
-  quantity: Number,
 });
 
-const carritoEsquema = new mongoose.Schema({
-  products: [productoCarritoSchema],
-});
-
-const carritoModelo = mongoose.model(carritosColeccion, carritoEsquema);
+const carritoModelo = mongoose.model('carritos', carritoSchema);
 
 module.exports = carritoModelo;
+
 
 /*
 const mongoose = require("mongoose");
@@ -39,7 +48,6 @@ const carritoModelo = mongoose.model("Carrito", carritoSchema);
 
 module.exports = carritoModelo;
 */
-
 
 /*
 v
