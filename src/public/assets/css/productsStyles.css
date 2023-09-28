@@ -150,3 +150,80 @@ a:hover {
     margin-left: 10px;
   }
   
+
+
+  /* Estilos para el carrito de compras */
+#carritoContainer {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 20px; /* Ajusta la distancia desde la parte superior */
+  right: 20px; /* Ajusta la distancia desde la derecha */
+  width: 300px; /* Ajusta el ancho deseado */
+  max-height: calc(100% - 40px); /* Limita la altura máxima para evitar desbordamiento */
+  overflow-y: auto; /* Agrega scroll si es necesario */
+  z-index: 999; /* Ajusta el valor z-index si es necesario */
+}
+
+/* Estilos para los botones dentro del carrito (Limpiar Carrito y Finalizar Compra) */
+#limpiarCarrito,
+#finalizarCompra {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-right: 10px;
+  display: block; /* Hace que los botones ocupen todo el ancho del contenedor */
+  width: 100%; /* Ajusta el ancho al 100% del contenedor */
+  margin-top: 10px; /* Espacio entre los botones */
+}
+
+#limpiarCarrito:hover,
+#finalizarCompra:hover {
+  background-color: #0056b3;
+}
+
+/* Estilos para el formulario de filtros */
+#filtroForm {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+label {
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button[type="submit"],
+#limpiarFiltros {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover,
+#limpiarFiltros:hover {
+  background-color: #0056b3;
+}
