@@ -30,19 +30,30 @@ function agregarAlCarrito(productId, productName) {
   // Agregar el producto al contenedor del carrito
   carritoContainer.appendChild(itemDiv);
 
+  // Buscar si el producto ya está en el carrito
+  const existingProductIndex = carritoProductos.findIndex(
+    (product) => product.id === productId
+  );
+
+  if (existingProductIndex !== -1) {
+    // Si el producto ya está en el carrito, actualiza la cantidad
+    quantityInput.value = carritoProductos[existingProductIndex].quantity;
+  }
+
   // Agregar un evento de cambio al input para actualizar la cantidad en el array
   quantityInput.addEventListener("change", () => {
     const quantity = parseInt(quantityInput.value, 10);
-    const index = carritoProductos.findIndex((item) => item.id === productId);
-    if (index !== -1) {
-      carritoProductos[index].quantity = quantity;
+
+    if (existingProductIndex !== -1) {
+      // Si el producto ya está en el carrito, actualiza la cantidad en el array
+      carritoProductos[existingProductIndex].quantity = quantity;
+    } else {
+      // Si el producto no estaba en el carrito, agrégalo con la cantidad actual
+      carritoProductos.push({ id: productId, quantity });
     }
   });
-
-  // Agregar el producto al array del carrito con la cantidad adecuada (inicialmente 1)
-  carritoProductos.push({ id: productId, quantity: 1 });
 }
-
+  
   // Función para limpiar el carrito
   function limpiarCarrito() {
     // Limpiar el contenedor del carrito
