@@ -1,7 +1,9 @@
+<body>
+
 <h1>Detalles del Carrito</h1>
 
 {{#if carritoDB}}
-  <h2>ID del Carrito: {{carritoDB._id}}</h2>
+  <h2 class="prueba">ID del Carrito: {{carritoDB._id}}</h2>
   <ul>
     {{#each carritoDB.productos}}
 
@@ -32,3 +34,5 @@
 {{else}}
   <p>El carrito no existe o está vacío.</p>
 {{/if}}
+</body>
+

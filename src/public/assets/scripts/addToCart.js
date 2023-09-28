@@ -69,32 +69,37 @@ function agregarAlCarrito(productId, productName) {
   });
 
   // Agrega un evento de clic al botón "Finalizar Compra"
-  finalizarCompraButton.addEventListener("click", () => {
-    // Realizar la petición POST al servidor con la ruta "/api/DBcarts"
-    fetch("/api/DBcarts", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ products: carritoProductos }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        // Manejar la respuesta del servidor después de la compra
-        console.log("Compra finalizada:", data);
-alert(`Carrito ${data.carritoInsertado._id} creado exitosamente`);
-        // Verificar si la compra fue exitosa y se creó el carrito
-        if (data.carritoInsertado && data.carritoInsertado._id) {
-          // Muestra un mensaje de alerta con el ID del carrito
-          alert(`Carrito ${data.carritoInsertado._id} creado exitosamente`);
-        }
-
-        // Limpiar el carrito después de la compra
-        limpiarCarrito();
-      })
-      .catch((error) => {
-        console.error("Error al finalizar la compra:", error);
+  finalizarCompraButton.addEventListener("click", async () => {
+    try {
+      // Realizar la petición POST al servidor con la ruta "/api/DBcarts"
+      const response = await fetch("/api/DBcarts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ products: carritoProductos }),
       });
+
+      if (!response.ok) {
+        throw new Error("La solicitud no fue exitosa");
+      }
+
+      const data = await response.json();
+
+      // Manejar la respuesta del servidor después de la compra
+      console.log("Compra finalizada:", data);
+
+      // Verificar si la compra fue exitosa y se creó el carrito
+      if (data.carritoInsertado && data.carritoInsertado._id) {
+        // Muestra un mensaje de alerta con el ID del carrito
+        alert(`Carrito ${data.carritoInsertado._id} creado exitosamente`);
+      }
+
+      // Limpiar el carrito después de la compra
+      limpiarCarrito();
+    } catch (error) {
+      console.error("Error al finalizar la compra:", error);
+    }
   });
 
   // Agrega un evento de clic a cada enlace "Agregar al Carrito"

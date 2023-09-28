@@ -144,9 +144,11 @@ router.get("/DBproducts/:id", async (req, res) => {
 
   if (!productoDB)
     return res.status(404).json({ error: `Producto con id ${id} inexistente` });
-
+  
+  res.header("Content-type", "text/html");
   res.status(200).render("DBproductsDetails", {
     productoDB,
+    estilo:"productDetails.css"
     // title: productoDB.title,
     // description: productoDB.description,
     // price: productoDB.price,
@@ -224,8 +226,10 @@ const carrito = await carritosModelo.findOne({ _id: cid })
       });
     }
 
+    res.header("Content-type", "text/html");
     res.status(200).render("DBcartDetails", {
-      carritoDB: carrito, // Asegúrate de pasar los datos del carrito correctos
+      estilo: "DBcartDetails.css",
+      carritoDB: carrito,
     });
   } catch (error) {
     console.error(error);
