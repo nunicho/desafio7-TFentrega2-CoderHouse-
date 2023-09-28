@@ -12,48 +12,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const carritoProductos = [];
 
   // Función para agregar un producto al carrito
-function agregarAlCarrito(productId, productName) {
-  // Crear un div para contener el ítem del carrito
-  const itemDiv = document.createElement("div");
+  function agregarAlCarrito(productId, productName, quantity) {
+    // Crear un div para contener el ítem del carrito
+    const itemDiv = document.createElement("div");
 
-  // Crear un elemento de texto para mostrar el nombre del producto
-  const productNameText = document.createTextNode(productName);
-  itemDiv.appendChild(productNameText);
+    // Crear un elemento de texto para mostrar el nombre del producto
+    const productNameText = document.createTextNode(productName);
+    itemDiv.appendChild(productNameText);
 
-  // Crear un elemento <input> para seleccionar la cantidad
-  const quantityInput = document.createElement("input");
-  quantityInput.type = "number";
-  quantityInput.min = 1;
-  quantityInput.value = 1; // Establece el valor predeterminado a 1
-  itemDiv.appendChild(quantityInput);
+    // Crear un elemento <input> para mostrar la cantidad
+    const quantityText = document.createElement("span");
+    quantityText.textContent = `Cantidad: ${quantity}`;
+    itemDiv.appendChild(quantityText);
 
-  // Agregar el producto al contenedor del carrito
-  carritoContainer.appendChild(itemDiv);
-
-  // Buscar si el producto ya está en el carrito
-  const existingProductIndex = carritoProductos.findIndex(
-    (product) => product.id === productId
-  );
-
-  if (existingProductIndex !== -1) {
-    // Si el producto ya está en el carrito, actualiza la cantidad
-    quantityInput.value = carritoProductos[existingProductIndex].quantity;
+    // Agregar el producto al contenedor del carrito
+    carritoContainer.appendChild(itemDiv);
   }
 
-  // Agregar un evento de cambio al input para actualizar la cantidad en el array
-  quantityInput.addEventListener("change", () => {
-    const quantity = parseInt(quantityInput.value, 10);
-
-    if (existingProductIndex !== -1) {
-      // Si el producto ya está en el carrito, actualiza la cantidad en el array
-      carritoProductos[existingProductIndex].quantity = quantity;
-    } else {
-      // Si el producto no estaba en el carrito, agrégalo con la cantidad actual
-      carritoProductos.push({ id: productId, quantity });
-    }
-  });
-}
-  
   // Función para limpiar el carrito
   function limpiarCarrito() {
     // Limpiar el contenedor del carrito
@@ -71,13 +46,19 @@ function agregarAlCarrito(productId, productName) {
   // Agrega un evento de clic al botón "Finalizar Compra"
   finalizarCompraButton.addEventListener("click", async () => {
     try {
+      // Estructura los datos para la solicitud POST
+      const products = carritoProductos.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      }));
+
       // Realizar la petición POST al servidor con la ruta "/api/carts"
       const response = await fetch("/api/carts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ products: carritoProductos }),
+        body: JSON.stringify({ products }),
       });
 
       if (!response.ok) {
@@ -116,11 +97,24 @@ function agregarAlCarrito(productId, productName) {
       // Obtén el nombre del producto desde el atributo data-product-name
       const productName = link.getAttribute("data-product-name");
 
-      // Agrega el producto al carrito y actualiza la vista del carrito
-      agregarAlCarrito(productId, productName);
+      // Pregunta al usuario la cantidad deseada (puedes usar un prompt o un input)
+      const quantity = parseInt(prompt(`Cantidad de ${productName}:`), 10);
+
+      if (!isNaN(quantity) && quantity > 0) {
+        // Agrega el producto al carrito y actualiza la vista del carrito
+        agregarAlCarrito(productId, productName, quantity);
+
+        // Agrega el producto al array del carrito
+        carritoProductos.push({ id: productId, quantity });
+      } else {
+        alert("La cantidad ingresada no es válida.");
+      }
     });
   });
 });
+
+
+
 
 
 
