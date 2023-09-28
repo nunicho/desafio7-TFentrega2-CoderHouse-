@@ -9,7 +9,7 @@ const path = require("path");
 // HANDLEBARS - importación
 const handlebars = require("express-handlebars");
 
-const PORT = 8081;
+const PORT = 8080;
 
 const app = express();
 
@@ -63,7 +63,8 @@ serverSocket.on("connection", (socket) => {});
 
 moongose
   .connect(
-    "mongodb+srv://contaalonso:12345qwert@cluster0.k4sa2ya.mongodb.net/?retryWrites=true&w=majority&dbName=ecommercePRUEBA"
+   // "mongodb+srv://contaalonso:12345qwert@cluster0.k4sa2ya.mongodb.net/?retryWrites=true&w=majority&dbName=ecommercePRUEBA"
+    "mongodb+srv://mauricioalonso:12345qwert@cluster0.frgywur.mongodb.net/?retryWrites=true&w=majority&dbName=ecommerce"
   )
   .then(console.log("DB Conectada"))
   .catch((error) => console.log(error));
