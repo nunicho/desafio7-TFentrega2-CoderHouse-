@@ -14,21 +14,14 @@
     <div>
         <a href="/chat">Chat- Con Handlebars</a>
     </div>
-    <div>
-        <a id="cartLink" href="/carts">Detalle carrito</a>
-    </div>
-
-    <!-- Agrega un formulario con un input para el ID del carrito -->
-    <form action="/carts/:id" method="GET">
-        <label for="cartId">ID del Carrito:</label>
-        <input type="text" id="cartId" name="cid" placeholder="Ingrese el ID del carrito" oninput="toggleSubmitButton(); updateCartLink();">
-        <button type="submit" disabled>Ver Detalle</button>
-    </form>
+  <label for="cartId">ID del Carrito:</label>
+    <input type="text" id="cartId" placeholder="Ingrese el ID del carrito" oninput="toggleSubmitButton(); updateCartLink();">
+    <button onclick="verDetalleCart();" disabled>Explorar Carrito</button>
 
     <script>
         function toggleSubmitButton() {
             const cartIdInput = document.getElementById("cartId");
-            const verDetalleButton = document.querySelector("button[type='submit']");
+            const verDetalleButton = document.querySelector("button");
 
             if (cartIdInput.value.trim() === "") {
                 verDetalleButton.disabled = true;
@@ -44,9 +37,21 @@
             const cartId = cartIdInput.value.trim();
 
             if (cartId === "") {
+                // Si el input está vacío, el enlace apunta a "/carts"
                 cartLink.href = "/carts";
             } else {
+                // Si hay un valor en el input, actualiza el href directamente
                 cartLink.href = `/carts/${cartId}`;
+            }
+        }
+
+        function verDetalleCart() {
+            const cartIdInput = document.getElementById("cartId");
+            const cartId = cartIdInput.value.trim();
+
+            if (cartId !== "") {
+                // Si hay un valor en el input, redirige al usuario a la URL correspondiente
+                window.location.href = `/carts/${cartId}`;
             }
         }
     </script>
