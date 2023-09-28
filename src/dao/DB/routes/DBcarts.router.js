@@ -1,17 +1,17 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const carritosModelo = require("../models/carritos.modelo.js"); // Importa el modelo de carritos
-const Producto = require("../models/productos.modelo.js"); // Importa el modelo de Producto
+const carritosModelo = require("../models/carritos.modelo.js"); 
+const Producto = require("../models/productos.modelo.js"); 
 const path = require("path");
 const prodModelo = require("../models/productos.modelo.js");
-//const carritoModelo = require("../models/carritos.modelo.js");
+
 
 //------------------------------------------------------------------------ PETICION GET
 
 router.get("/", async (req, res) => {
   try {
-    const carritos = await carritosModelo.find(); // Obtén todos los carritos
+    const carritos = await carritosModelo.find(); 
 
     res.status(200).json({ data: carritos });
   } catch (error) {
@@ -44,12 +44,12 @@ router.get("/:cid", async (req, res) => {
       });
     }
 
-    // Modifica la respuesta para que "cantidad" se llame "quantity" y esté a la altura de "producto"
+
     const productosEnCarrito = carrito.productos.map((productoEnCarrito) => ({
       producto: {
         ...productoEnCarrito.producto._doc,
       },
-      quantity: productoEnCarrito.cantidad, // Cambia "cantidad" a "quantity" aquí
+      quantity: productoEnCarrito.cantidad, 
     }));
 
     res
@@ -77,7 +77,7 @@ router.post("/", async (req, res) => {
   try {
     const carritoToAdd = req.body;
 
-    // Verificar si falta algún campo 'id' o 'quantity' en algún producto
+  
     const hasMissingFields = carritoToAdd.products.some(
       (product) => !product.id || !product.quantity
     );
@@ -88,9 +88,7 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Verificar que el ID sea válido según los parámetros de MongoDB
-
-    // Verificar si los productos existen en la base de datos
+  
     const productIds = carritoToAdd.products.map((product) => product.id);
 
     for (const productId of productIds) {
@@ -99,22 +97,22 @@ router.post("/", async (req, res) => {
       }
     }
 
-    // Sumar la cantidad de productos con el mismo id
+  
     const groupedProducts = {};
     carritoToAdd.products.forEach((product) => {
       const { id, quantity } = product;
       if (!groupedProducts[id]) {
-        groupedProducts[id] = parseInt(quantity, 10); // Asegúrate de convertir quantity a número
+        groupedProducts[id] = parseInt(quantity, 10); 
       } else {
-        groupedProducts[id] += parseInt(quantity, 10); // Asegúrate de convertir quantity a número
+        groupedProducts[id] += parseInt(quantity, 10); 
       }
     });
 
-    // Crear un nuevo carrito con las cantidades agrupadas
+ 
     const carrito = new carritosModelo({
       productos: Object.keys(groupedProducts).map((id) => ({
-        producto: id, // Cambia "id" a "producto"
-        cantidad: groupedProducts[id], // Agrega cantidad
+        producto: id, 
+        cantidad: groupedProducts[id], 
       })),
     });
 
@@ -130,11 +128,11 @@ router.post("/", async (req, res) => {
 
 router.put("/:cid/products/:pid", async (req, res) => {
   try {
-    const cid = req.params.cid; // ID del carrito a actualizar
-    const pid = req.params.pid; // ID del producto a actualizar
-    const { quantity } = req.body; // Nueva cantidad del producto
+    const cid = req.params.cid; 
+    const pid = req.params.pid; 
+    const { quantity } = req.body; 
 
-    // Verifica si se proporcionaron todos los parámetros necesarios
+  
     if (!cid || !pid || quantity === undefined) {
       return res.status(400).json({
         error:
@@ -142,7 +140,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
       });
     }
 
-    // Verifica si los IDs son válidos
+    
     if (
       !mongoose.Types.ObjectId.isValid(cid) ||
       !mongoose.Types.ObjectId.isValid(pid)
@@ -152,7 +150,7 @@ router.put("/:cid/products/:pid", async (req, res) => {
       });
     }
 
-    // Verifica si quantity es un número válido y mayor que cero
+ 
     const parsedQuantity = parseInt(quantity, 10);
     if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
       return res.status(400).json({
@@ -160,32 +158,32 @@ router.put("/:cid/products/:pid", async (req, res) => {
       });
     }
 
-    // Busca el carrito por su ID
+
     const carrito = await carritosModelo.findOne({ _id: cid });
 
-    // Verifica si el carrito existe
+ 
     if (!carrito) {
       return res.status(404).json({
         error: `El carrito con ID ${cid} no existe`,
       });
     }
 
-    // Busca el índice del producto que se va a actualizar dentro del array de productos
+    
     const indexToUpdate = carrito.productos.findIndex(
       (producto) => String(producto.producto) === pid
     );
 
-    // Verifica si el producto a actualizar existe en el carrito
+  
     if (indexToUpdate === -1) {
       return res.status(404).json({
         error: `El producto con ID ${pid} no existe en el carrito`,
       });
     }
 
-    // Actualiza la cantidad del producto en el carrito
+
     carrito.productos[indexToUpdate].cantidad = parsedQuantity;
 
-    // Guarda el carrito actualizado en la base de datos
+    
     const carritoActualizado = await carrito.save();
 
     res.status(200).json({
@@ -204,27 +202,26 @@ router.put("/:cid/products/:pid", async (req, res) => {
 
 router.put("/:cid", async (req, res) => {
   try {
-    const cid = req.params.cid; // ID del carrito a actualizar
-    const nuevosProductos = req.body.products; // Arreglo de nuevos productos
+    const cid = req.params.cid; 
+    const nuevosProductos = req.body.products; 
 
-    // Verifica si el ID del carrito es válido
     if (!mongoose.Types.ObjectId.isValid(cid)) {
       return res.status(400).json({
         error: "ID de carrito inválido",
       });
     }
 
-    // Busca el carrito por su ID
+    
     const carrito = await carritosModelo.findOne({ _id: cid });
 
-    // Verifica si el carrito existe
+
     if (!carrito) {
       return res.status(404).json({
         error: `El carrito con ID ${cid} no existe`,
       });
     }
 
-    // Verifica si el arreglo de nuevos productos es válido
+    
     if (!Array.isArray(nuevosProductos)) {
       return res.status(400).json({
         error:
@@ -232,7 +229,7 @@ router.put("/:cid", async (req, res) => {
       });
     }
 
-    // Verifica si hay datos faltantes en los nuevos productos
+   
     const datosFaltantes = nuevosProductos.some(
       (product) => !product.id || !product.quantity
     );
@@ -243,7 +240,7 @@ router.put("/:cid", async (req, res) => {
       });
     }
 
-    // Verifica si los IDs de los nuevos productos son válidos
+    
     const productIds = nuevosProductos.map((product) => product.id);
 
     for (const productId of productIds) {
@@ -252,11 +249,10 @@ router.put("/:cid", async (req, res) => {
       }
     }
 
-    // Actualiza los productos del carrito con los nuevos productos
-    // Aquí asumimos que carrito.products es un arreglo de objetos con formato { id, quantity }
+    
     carrito.products = nuevosProductos;
 
-    // Guarda el carrito actualizado en la base de datos
+   
     const carritoActualizado = await carrito.save();
 
     res.status(200).json({
