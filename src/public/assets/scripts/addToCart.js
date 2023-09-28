@@ -1,9 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Obtén los enlaces "Agregar al Carrito"
-  const addToCartLinks = document.querySelectorAll("[data-product-id]");
-
   // Obtén el botón "Limpiar Carrito"
   const limpiarCarritoButton = document.getElementById("limpiarCarrito");
+
+  // Obtén el botón "Finalizar Compra"
+  const finalizarCompraButton = document.getElementById("finalizarCompra");
+
+  // Obtén el contenedor del carrito
+  const carritoContainer = document.getElementById("carritoProductos");
+
+  // Array para almacenar los productos en el carrito
+  const carritoProductos = [];
 
   // Función para agregar un producto al carrito
   function agregarAlCarrito(productId, productName) {
@@ -22,14 +28,19 @@ document.addEventListener("DOMContentLoaded", function () {
     itemDiv.appendChild(quantityInput);
 
     // Agregar el producto al contenedor del carrito
-    const carritoContainer = document.getElementById("carritoProductos");
     carritoContainer.appendChild(itemDiv);
+
+    // Agregar el producto al array del carrito
+    carritoProductos.push({ id: productId, quantity: 1 });
   }
 
   // Función para limpiar el carrito
   function limpiarCarrito() {
-    const carritoContainer = document.getElementById("carritoProductos");
-    carritoContainer.innerHTML = ""; // Limpia el contenido del contenedor
+    // Limpiar el contenedor del carrito
+    carritoContainer.innerHTML = "";
+
+    // Limpiar el array del carrito
+    carritoProductos.length = 0;
   }
 
   // Agrega un evento de clic al botón "Limpiar Carrito"
@@ -37,7 +48,31 @@ document.addEventListener("DOMContentLoaded", function () {
     limpiarCarrito();
   });
 
+  // Agrega un evento de clic al botón "Finalizar Compra"
+  finalizarCompraButton.addEventListener("click", () => {
+    // Realizar la petición POST al servidor con la ruta "/api/DBcarts"
+    fetch("/api/DBcarts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ products: carritoProductos }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Manejar la respuesta del servidor después de la compra
+        console.log("Compra finalizada:", data);
+
+        // Limpiar el carrito después de la compra
+        limpiarCarrito();
+      })
+      .catch((error) => {
+        console.error("Error al finalizar la compra:", error);
+      });
+  });
+
   // Agrega un evento de clic a cada enlace "Agregar al Carrito"
+  const addToCartLinks = document.querySelectorAll("[data-product-id]");
   addToCartLinks.forEach((link) => {
     link.addEventListener("click", (event) => {
       event.preventDefault(); // Evita la navegación a la URL "#" por defecto
