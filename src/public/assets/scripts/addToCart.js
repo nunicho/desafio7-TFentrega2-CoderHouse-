@@ -82,6 +82,12 @@ function agregarAlCarrito(productId, productName) {
       .then((data) => {
         // Manejar la respuesta del servidor después de la compra
         console.log("Compra finalizada:", data);
+alert(`Carrito ${data.carritoInsertado._id} creado exitosamente`);
+        // Verificar si la compra fue exitosa y se creó el carrito
+        if (data.carritoInsertado && data.carritoInsertado._id) {
+          // Muestra un mensaje de alerta con el ID del carrito
+          alert(`Carrito ${data.carritoInsertado._id} creado exitosamente`);
+        }
 
         // Limpiar el carrito después de la compra
         limpiarCarrito();
