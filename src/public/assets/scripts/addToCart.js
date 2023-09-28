@@ -71,8 +71,8 @@ function agregarAlCarrito(productId, productName) {
   // Agrega un evento de clic al botón "Finalizar Compra"
   finalizarCompraButton.addEventListener("click", async () => {
     try {
-      // Realizar la petición POST al servidor con la ruta "/api/DBcarts"
-      const response = await fetch("/api/DBcarts", {
+      // Realizar la petición POST al servidor con la ruta "/api/carts"
+      const response = await fetch("/api/carts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,9 @@ function agregarAlCarrito(productId, productName) {
       });
 
       if (!response.ok) {
-        throw new Error("La solicitud no fue exitosa");
+        throw new Error(
+          `La solicitud no fue exitosa. Código de estado: ${response.status}`
+        );
       }
 
       const data = await response.json();
