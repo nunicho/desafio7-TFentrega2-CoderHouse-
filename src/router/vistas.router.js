@@ -2,6 +2,8 @@ const Router = require("express").Router;
 const router = Router();
 const arrayProducts = require("../archivos/productos.json");
 const productosModelo = require("../dao/DB/models/productos.modelo.js");
+const carritosModelo = require("../dao/DB/models/carritos.modelo.js");
+const prodModelo = require("../dao/DB/models/productos.modelo.js");
 const mongoose = require("mongoose");
 
 router.get("/", (req, res) => {
@@ -11,7 +13,6 @@ router.get("/", (req, res) => {
     estilo: "styles.css",
   });
 });
-
 
 //---------------------------------------------------------------- RUTAS EN FILESYSTEM --------------- //
 
@@ -63,9 +64,7 @@ router.get("/fsrealtimeproducts", (req, res) => {
   });
 });
 
-
 //---------------------------------------------------------------- RUTAS PARA MONGO --------------- //
-
 
 router.get("/DBproducts", async (req, res) => {
   try {
@@ -135,37 +134,6 @@ router.get("/DBproducts", async (req, res) => {
 
 module.exports = router;
 
-/*
-router.get("/DBproducts", async (req, res) => {
-  try {
-    //const productos = await productosModelo.find().lean();
-
-    let pagina = req.query.pagina
-    if(!pagina) pagina =1
-   
-    let productos = await productosModelo.paginate({},{limit:5, lean: true, page:pagina});
-    console.log(productos)
-
-    let { totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } = productos;
-
-    res.header("Content-type", "text/html");
-    res.status(200).render("DBproducts", {
-      productos: productos.docs,
-      hasProducts: productos.docs.length > 0,
-      activeProduct: true,
-      pageTitle: "Productos en DATABASE",
-      estilo: "productsStyles.css",
-      totalPages,
-      hasPrevPage,
-      hasNextPage,
-      prevPage,
-      nextPage,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
-});
-*/
 router.get("/DBproducts/:id", async (req, res) => {
   let id = req.params.id;
 
@@ -188,7 +156,6 @@ router.get("/DBproducts/:id", async (req, res) => {
     // estilo: "realTimeProducts.css"
   });
 });
-
 
 router.post("/DBProducts", async (req, res) => {
   let producto = req.body;
@@ -228,25 +195,51 @@ router.delete("/DBproducts/:id", async (req, res) => {
   let resultado = await productosModelo.deleteOne({ _id: id });
 
   res.status(200).json({ resultado });
-  
 });
 
-module.exports = router;
 
 
-module.exports = router;
+router.get("/carts/:cid", async (req, res) => {
+  try {
+    const cid = req.params.cid;
 
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      return res.status(400).json({
+        status: "error",
+        mensaje: 'Requiere un argumento "cid" de tipo ObjectId válido',
+      });
+    }
+
+const carrito = await carritosModelo.findOne({ _id: cid })
+  .populate({
+    path: "productos.producto",
+    model: prodModelo,
+  })
+  .lean();
+
+    if (!carrito) {
+      return res.status(404).json({
+        status: "error",
+        mensaje: `El carrito con ID ${cid} no existe`,
+      });
+    }
+
+    res.status(200).render("DBcartDetails", {
+      carritoDB: carrito, // Asegúrate de pasar los datos del carrito correctos
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
 
 //---------------------------------------------------------------- RUTAS PARA EL CHAT --------------- //
 
-router.get("/chat", (req, res) => {  
-    res.setHeader("Content-type", "text/html");
-    res.status(200).render("chat", {
-      estilo: "chat.css",
-    });
-    
+router.get("/chat", (req, res) => {
+  res.setHeader("Content-type", "text/html");
+  res.status(200).render("chat", {
+    estilo: "chat.css",
+  });
 });
 
 module.exports = router;
-
-
