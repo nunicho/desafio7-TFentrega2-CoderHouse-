@@ -14,15 +14,15 @@ Mauricio Javier ALONSO
 
 3. ## TITULO DESAFIO ENTREGABLE: 
 
-Práctica de integración sobre tu ecommerce  
+Segunda pre-entrega del proyecto final 
 
 4. ## N° DESAFIO ENTREGABLE: 
 
-N° 6
+N° 7
 
 5. ## CONSIGNA DESAFIO ENTREGABLE: 
 
-Continuar sobre el proyecto que has trabajado para tu ecommerce y configurar los siguientes elementos: Persistencia MongoDB, Separar FileSystem y DB en carpeta DAO, implementar un chat con websocket y handlebars.
+Deberás entregar el proyecto que has venido armando, cambiando persistencia en base de datos, además de agregar algunos endpoints nuevos a tu e-commerce. 
 
 
 
@@ -33,7 +33,7 @@ GET / http://localhost:8080/api/products
 
 GET (con limit) / http://localhost:8080/api/products?limit=2
 
-GET (con Id) / http://localhost:8080/api/products/650ccb2a40203de5f1000744
+GET (con Id) / http://localhost:8080/api/products/65160d3c2d9e25f3e602ed3e
 
 POST / http://localhost:8080/api/products
 {
@@ -46,9 +46,9 @@ POST / http://localhost:8080/api/products
 
 }
 
-DELETE / http://localhost:8080/api/products/650ce08f9243a5f35e588175
+DELETE / http://localhost:8080/api/products/65160d3c2d9e25f3e602ed3e
 
-PUT / http://localhost:8080/api/products/650ccae740203de5f1000741
+PUT / http://localhost:8080/api/products/65160d3c2d9e25f3e602ed3e
 
 {
       "title":" Tender para la ropa MEGAMAX PRO",
@@ -64,24 +64,69 @@ PUT / http://localhost:8080/api/products/650ccae740203de5f1000741
 
 GET / http://localhost:8080/api/carts
 
-GET (con Id) / http://localhost:8080/api/carts/650cd720533cbe8515329224
+GET (con Id) / http://localhost:8080/api/carts/65160f162d9e25f3e602ed67
 
 POST / http://localhost:8080/api/products
 
 {
   "products": [    
-    {"id": "650ccae740203de5f1000741",
-     "quantity": 2
+    {"id": "65160d3c2d9e25f3e602ed3e",
+     "quantity": "4"
      },
-        {"id": "650ccb6440203de5f1000748",
-     "quantity": 2
+        {"id": "65160d662d9e25f3e602ed41",
+     "quantity": 4
      },
-             {"id": "650ccae740203de5f1000741",
+    {"id": "65160d8f2d9e25f3e602ed44",
      "quantity": 2
      }
   ]
 }
 
+PUT / 
+
+{
+  "products": [    
+    {"id": "65160d3c2d9e25f3e602ed3e",
+     "quantity": "4"
+     },
+        {"id": "65160d662d9e25f3e602ed41",
+     "quantity": 4
+     },
+    {"id": "65160d8f2d9e25f3e602ed44",
+     "quantity": 2
+     }
+  ]
+}
+
+PUT / http://localhost:8080/api/carts/651615487520733661cb99f0 // Para editar todo el carro
+
+{
+  "products": [    
+    {"id": "65160d8f2d9e25f3e602ed44",
+     "quantity": "4"
+     },
+        {"id": "65160d8f2d9e25f3e602ed44",
+     "quantity": 4
+     }
+  ]
+}
+
+
+PUT / http://localhost:8080/api/Carts/65161408d2e9f8ac5bc09f87/products/65160d8f2d9e25f3e602ed44  //esta petición sólo cambia la candidad de un determinado producto dentro de un carrito
+
+
+{
+    "quantity":"900"
+}
+
+
+DELETE / http://localhost:8080/api/carts/65161408d2e9f8ac5bc09f87
+
+DELETE // http://localhost:8080/api/carts/651615487520733661cb99f0/products/65160ded2d9e25f3e602ed4a  // para eliminar un producto específico de un carrito, sin borrar el carrito
+
 6. ## FileSystem y MongoDB:
 
 Puse todo el carpeta DAO, pero dejé funcionales las vistas de handlebars. El usuario puede elegir navegar dentro de filesystem o MongoDB
+
+Para esta entrega se creó un form, con un input donde el usuario ingresa el número de id del carrito, por ejemplo 651615487520733661cb99f0 y luego puede ir a 
+http://localhost:8080/carts/651615487520733661cb99f0
